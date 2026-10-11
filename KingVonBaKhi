@@ -1,0 +1,140 @@
+
+-- KingVon Ba Khi | UI Demo
+-- Roblox Studio: LocalScript trong StarterPlayerScripts
+-- Cac tab chi la giao dien mau, khong co chuc nang cheat.
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+
+local gui = Instance.new("ScreenGui")
+gui.Name = "KingVonBaKhi"
+gui.ResetOnSpawn = false
+gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local red = Color3.fromRGB(220, 35, 45)
+local dark = Color3.fromRGB(15, 15, 18)
+
+local main = Instance.new("Frame")
+main.Size = UDim2.new(0.9, 0, 0, 300)
+main.Position = UDim2.new(0.05, 0, 0.25, 0)
+main.BackgroundColor3 = dark
+main.BorderSizePixel = 0
+main.Parent = gui
+Instance.new("UICorner", main).CornerRadius = UDim.new(0, 10)
+
+local outline = Instance.new("UIStroke", main)
+outline.Color = red
+outline.Thickness = 2
+
+local header = Instance.new("TextButton")
+header.Size = UDim2.new(1, 0, 0, 42)
+header.BackgroundColor3 = Color3.fromRGB(45, 15, 20)
+header.Text = "KINGVON BÁ KHÍ     —     ×"
+header.TextColor3 = Color3.new(1, 1, 1)
+header.Font = Enum.Font.GothamBold
+header.TextSize = 14
+header.Parent = main
+
+local sidebar = Instance.new("Frame")
+sidebar.Position = UDim2.new(0, 0, 0, 42)
+sidebar.Size = UDim2.new(0, 112, 1, -42)
+sidebar.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
+sidebar.Parent = main
+
+local content = Instance.new("TextLabel")
+content.Position = UDim2.new(0, 122, 0, 55)
+content.Size = UDim2.new(1, -132, 1, -85)
+content.BackgroundTransparency = 1
+content.TextColor3 = Color3.new(1, 1, 1)
+content.TextWrapped = true
+content.TextYAlignment = Enum.TextYAlignment.Top
+content.Text = "Chào mừng đến KingVon Bá Khí!"
+content.Font = Enum.Font.Gotham
+content.TextSize = 14
+content.Parent = main
+
+local names = {"Home", "Aimbot", "Premium ESP", "Teleport", "Misc"}
+local descriptions = {
+    Home = "Chào mừng đến KingVon Bá Khí!",
+    Aimbot = "Tab minh họa giao diện.",
+    ["Premium ESP"] = "Tab minh họa giao diện.",
+    Teleport = "Tab minh họa giao diện.",
+    Misc = "Menu kéo thả, đóng/mở và FPS."
+}
+
+for i, name in ipairs(names) do
+    local b = Instance.new("TextButton")
+    b.Size = UDim2.new(1, -10, 0, 38)
+    b.Position = UDim2.new(0, 5, 0, 8 + (i - 1) * 44)
+    b.BackgroundColor3 = red
+    b.TextColor3 = Color3.new(1, 1, 1)
+    b.Text = name
+    b.TextSize = 11
+    b.Font = Enum.Font.GothamBold
+    b.Parent = sidebar
+    Instance.new("UICorner", b).CornerRadius = UDim.new(0, 5)
+
+    b.Activated:Connect(function()
+        content.Text = descriptions[name] or name
+    end)
+end
+
+local fps = Instance.new("TextLabel")
+fps.Size = UDim2.fromOffset(100, 24)
+fps.Position = UDim2.new(1, -108, 1, -28)
+fps.BackgroundTransparency = 1
+fps.TextColor3 = red
+fps.Text = "FPS: --"
+fps.Parent = gui
+
+local count, elapsed = 0, 0
+RunService.RenderStepped:Connect(function(dt)
+    count += 1
+    elapsed += dt
+    if elapsed >= 1 then
+        fps.Text = "FPS: " .. math.floor(count / elapsed)
+        count, elapsed = 0, 0
+    end
+end)
+
+local open = true
+header.Activated:Connect(function()
+    open = not open
+    main.Visible = open
+end)
+
+-- Keo tha cua so bang chuot/cam ung
+local dragging, startPos, startInput, dragInput
+header.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+    or input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        startInput = input.Position
+        startPos = main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+header.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+    or input.UserInputType == Enum.UserInputType.MouseMovement then
+        dragInput = input
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and (input == dragInput
+    or input.UserInputType == Enum.UserInputType.Touch) then
+        local d = input.Position - startInput
+        main.Position = UDim2.new(
+            startPos.X.Scale, startPos.X.Offset + d.X,
+            startPos.Y.Scale, startPos.Y.Offset + d.Y
+        )
+    end
+end)
+KingVonBaKhi.lua
